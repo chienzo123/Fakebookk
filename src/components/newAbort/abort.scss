@@ -1,0 +1,21 @@
+@import '../../sass/mixin.sass';
+
+.inix{
+    width: 30%;
+    justify-content: start;
+    margin-top: 0;
+    }
+.info__user{
+       width: 92%;
+       height: 20%;
+       background-color: #ffffff;
+       color: black;
+       align-items: center;
+       justify-content: start;
+       cursor: pointer;
+       display: flex;
+       border: 0px;
+       border-radius: 20px;
+       margin: 10px;
+    
+}

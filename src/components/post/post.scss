@@ -1,0 +1,153 @@
+@import '../../sass/mixin.sass';
+
+.post{
+    margin-top: 15px;
+    border-radius: 15px;
+    background-color: #fefefe;
+    width: 110%;
+    box-shadow: 0 5px 7px -7px rgba(0,0,0,0.75);
+}
+.post__top{
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 15px;
+}
+.post__avatar{
+    margin-right: 10px;
+}
+.post__info h3{
+font-size: medium;
+margin: 0;
+}
+.post__info p{
+    font-size: smail;
+    color: gray;
+    margin: 0;
+}
+.post__media img{
+width: 100%;
+}
+.post__media video{
+    width: 100%;
+}
+.post__bottom{
+    padding: 10px 25px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.post__bottom{
+    padding: 10px 25px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.post__options{
+   display: flex;
+   justify-content: space-evenly;
+   align-items: center;
+   font-size: medium;
+   padding: 5px 15px;
+   border-top: 1px solid #eff2f5;
+   cursor: pointer;
+   color: gray;
+}
+.post__options--option{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 10px  5px;
+    border-radius: 10px;
+}
+.post__options--option:hover{
+    background-color: #eff2f5;
+}
+.post__options--option p{
+    margin-left: 10px;
+}
+.post__options--option .nomob{
+    display: none;
+    @include mq(md){
+        display: flex;
+    }
+}
+.like{
+    margin-left: 30px;
+}
+
+.likes{
+    color: blue;
+}
+.post__top--user{
+width: 80%;
+display: flex;
+justify-content: start;
+}
+.post__select{
+    width: 20%;
+    display: flex;
+    justify-content: flex-end;
+    position: relative;
+}
+.post__select--option{
+    width: 100px;
+    height: 70px;
+    position: absolute;
+    display: none;
+    background-color: #f0f2f5;
+    left: 650px;
+    right: 0px;
+    top: 60px;
+    border-radius: 10px;
+
+    
+}
+.post__select--option .post1{
+    width: 80%;
+    height: 48%;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    border: 0px;
+    justify-content: center;
+    
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    margin-left: 10px;
+
+    
+}
+.post__select--option .post2{
+    width: 80%;
+    height: 48%;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    border: 0px;
+    justify-content: center;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+
+    margin-left: 10px;
+    
+
+    
+}
+.post__select--option p{
+    margin-top: 10px;
+    
+}
+.post__select--option hr{
+    width: 70%;
+    
+    color: red;
+    padding: 0;
+    margin: 0px;
+    margin-left: 15px;
+}
+.post__select--option .post2:hover{
+    background-color: #ffffff;
+}
+.post__select--option .post1:hover{
+    background-color: #ffffff;
+}
