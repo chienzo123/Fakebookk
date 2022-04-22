@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import './chat.scss'
 import firebase from 'firebase/app';
-import { datab } from '../../firebase';
 import 'firebase/auth';
 import 'firebase/database';
 import { Avatar } from '@material-ui/core';

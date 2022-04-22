@@ -1,19 +1,16 @@
-import React, {useState, useEffect} from 'react'
- import './profile.css';
+import React, { useState, useEffect, useContext } from 'react'
+import './profile.css';
 import _ from 'lodash';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import SearchIcon from '@material-ui/icons/Search';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import PostCreator from '../postCreater/postCreater';
-import Contactss from './Contactss';
-import {Provider} from '../context.jsx'
+import 'firebase/auth';
+import 'firebase/database';
 import { useParams } from "react-router-dom";
 import firebase from 'firebase/app';
-
-
+import Post from '../post/post'
+import { UserContext } from '../../App';
 const useStyles = makeStyles((theme) => ({
     root: {
         '& > *': {
@@ -30,31 +27,39 @@ function Profile() {
     const [user, setUser] = useState({})
     const [isFriend, setisFriend] = useState(false);
     const [isComfirm, setComfirm] = useState(false);
+    const [listPost, setListPost] = useState([]);
+    let { data, updateListUser } = React.useContext(UserContext)
     let { id } = useParams();
     useEffect(() => {
-        // lấy dữ liệu tại đây
-        const fireStore = firebase.database().ref('/User')
-        fireStore.on('value', (res) => { //res dl trả về
-            let listUser = [];
-            const data = res.val();
-            for (let id in data) { // lấy các key tự sinh
-                listUser.push({
-                    id,
-                    friend: data[id].friend,
-                    UserId: data[id].UserId,
-                    img: data[id].image,
-                    name: data[id].name,
-                    email: data[id].email,
-                    comfirm: data[id].comfirm
-                })
-            }
-           let user = _.find(listUser, {UserId: id} )
-           let CurentUser = _.find(listUser, {UserId: firebase.auth().currentUser.uid} )
-           setUser(user)
-           setisFriend(user.friend.includes(firebase.auth().currentUser.uid))
-           setComfirm(user.comfirm.includes(firebase.auth().currentUser.uid) || CurentUser.comfirm.includes(user.UserId))
-        })
-    }, [])
+        let listUser = data
+        if (data.length) {
+            let user = _.find(listUser, { UserId: id })
+            let CurentUser = _.find(listUser, { UserId: firebase.auth().currentUser.uid })
+            setUser(user)
+            setisFriend(user.friend.includes(firebase.auth().currentUser.uid))
+            setComfirm(user.comfirm.includes(firebase.auth().currentUser.uid) || CurentUser.comfirm.includes(user.UserId))
+            const fireStore = firebase.database().ref('/post')
+            fireStore.on('value', (res) => {
+                const data = res.val();
+                let postList = [];
+                for (let id in data) {
+                    postList.push({
+                        id,
+                        authorPic: data[id].authorPic,
+                        authorName: data[id].authorName,
+                        timestamp: data[id].timestamp,
+                        message: data[id].message,
+                        optionalImg: data[id].optionalImg,
+                        like: data[id].like,
+                        userID: data[id].userID
+                    })
+                }
+                postList = _.filter(postList, { userID: user.UserId })
+                setListPost(postList);
+            })
+        }
+
+    }, [data])
     const addFriend = () => {
         const updates = {};
         const newUser = {
@@ -65,7 +70,7 @@ function Profile() {
             friend: user.friend,
             comfirm: user.comfirm + firebase.auth().currentUser.uid + ',',
         }
-        updates['/User/'+ user.id] = newUser;
+        updates['/User/' + user.id] = newUser;
         firebase.database().ref().update(updates);
     }
     return (
@@ -120,15 +125,15 @@ function Profile() {
                             <button type="button" className="btn_edit1"><i className="fa fa-pencil" style={{ fontSize: '18px' }}></i>Chỉnh sửa trang cá nhân</button>
                         </div>
                         {
-                           firebase.auth().currentUser.uid !== id ? isComfirm ? <div className="edit_p2">
-                           <button type="button"  className="btn_edit2">Chờ xác nhận</button>
-                           </div> :  !isFriend ? <div className="edit_p2">
-                            <button type="button" onClick={() =>{ addFriend() } } className="btn_edit2">Kết bạn</button>
+                            firebase.auth().currentUser.uid !== id ? isComfirm ? <div className="edit_p2">
+                                <button type="button" className="btn_edit2">Chờ xác nhận</button>
+                            </div> : !isFriend ? <div className="edit_p2">
+                                <button type="button" onClick={() => { addFriend() }} className="btn_edit2">Kết bạn</button>
                             </div> : <div className="edit_p2">
-                            <button type="button"  className="btn_edit2">Bạn bè</button>
-                            </div>  : ""
+                                <button type="button" className="btn_edit2">Bạn bè</button>
+                            </div> : ""
                         }
-                        
+
                     </div>
                 </div>
             </div>
@@ -235,14 +240,26 @@ function Profile() {
                     <div className="right_content">
                         {
                             firebase.auth().currentUser.uid === user.UserId ?
-                            <div className="post_creator">
-                            <PostCreator />
-                        </div> : ""
+                                <div className="post_creator">
+                                    <PostCreator />
+                                </div> : ""
                         }
                         <div className="post_profile">
-                            <Provider>
-                                <Contactss id = {id}/>
-                            </Provider>
+                            {
+                                listPost.length && listPost.map(contact =>
+                                    <Post
+                                        key={contact.id}
+                                        id={contact.id}
+                                        userID={contact.userID}
+                                        authorPic={contact.authorPic}
+                                        authorName={contact.authorName}
+                                        timestamp={contact.timestamp}
+                                        message={contact.message}
+                                        optionalImg={contact.optionalImg}
+                                        like={contact.like}
+                                    />
+                                )
+                            }
                         </div>
                     </div>
                 </div>

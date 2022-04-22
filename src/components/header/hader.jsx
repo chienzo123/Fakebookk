@@ -24,8 +24,8 @@ import AbortNew from '../newAbort/abort';
 
 
 function Header() {
-    const [checked, setChecked] = useState(true);
-    const [checkedc, setCheckedc] = useState(true);
+    const [checked, setChecked] = useState(false);
+    const [checkedc, setCheckedc] = useState(false);
     const user = {
         img: firebase.auth().currentUser.photoURL,
         name: firebase.auth().currentUser.displayName
@@ -84,27 +84,25 @@ function Header() {
                     <ForumIcon />
                 </IconButton>
                 <IconButton className="dad" onClick={() => {
+                    setChecked(false)
                     setCheckedc(!checkedc);
-                    if (checkedc)
-                        document.getElementsByClassName("info")[0].setAttribute("style", "display: block !important;")
-                    if (!checkedc)
-                        document.getElementsByClassName("info")[0].removeAttribute("style")
                 }}>
                     <NotificationsActiveIcon />
                 </IconButton>
-                <div className="info">
-                    <AbortNew/>
-                </div>
+                {
+                    checkedc ? <div className="info">
+                    <AbortNew/> 
+                </div> : <div></div>
+                }
+                
                 <IconButton className="dad" onClick={() => {
                     setChecked(!checked);
-                    if (checked)
-                        document.getElementsByClassName("info")[1].setAttribute("style", "display: block !important;")
-                    if (!checked)
-                        document.getElementsByClassName("info")[1].removeAttribute("style")
+                    setCheckedc(false)
                 }}>
                     <ExpandMoreIcon />
                 </IconButton>
-                <div className="info">
+                {
+                    checked ? <div className="info">
                     <button className="info__user">
                         <div className="inix">
                             <Avatar alt="Cindy Baker" src={user.img} />
@@ -155,7 +153,9 @@ function Header() {
                     </button>
 
 
-                </div>
+                </div> : <div></div>
+                }
+                
             </div>
         </nav>
     )

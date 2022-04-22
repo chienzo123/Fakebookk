@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, {  useEffect, useState } from 'react';
 import './App.sass';
 import Header from './components/header/hader';
 import LeftSidebar from './components/leftSlidebar/leftSlidebar';
@@ -11,29 +11,33 @@ import Watch from "./components/watch/watch";
 import Chat from './components/Chat/chat';
 import Profile from './components/Profile/profile';
 import _ from 'lodash';
-
+export const UserContext = React.createContext(null);
 function App() {
   const [isSignedIn, setIsSignedIn] = useState(false); // Local signed-in state.
+  const [listUser, setListUser] = useState([]);
   let fireStore = firebase.database().ref('/User');
-  console.log(fireStore);
   useEffect(() => {
     const unregisterAuthObserver = firebase.auth().onAuthStateChanged(user => {
       setIsSignedIn(!!user);
       if (!!user) {
-        fireStore.on('value', (res) => { //res dl trả về
+        fireStore.on('value', (res) => {
           const data = res.val();
-          let listUser = [];
-          for (let id in data) { // lấy các key tự sinh
-            listUser.push({
+          let listUsers = [];
+          for (let id in data) {
+            listUsers.push({
               id,
-              UserID: data[id].UserID,
+              friend: data[id].friend,
+              UserId: data[id].UserId,
+              img: data[id].image,
               name: data[id].name,
-              email: data[id].email
+              email: data[id].email,
+              comfirm: data[id].comfirm
             })
           }
-          let userCurrent = _.find(listUser, { email: firebase.auth().currentUser.email })
+          setListUser(listUsers)
+          let userCurrent = _.find(listUsers, { email: firebase.auth().currentUser.email })
           if (!userCurrent) {
-             fireStore.push({
+            fireStore.push({
               image: firebase.auth().currentUser.photoURL,
               UserId: firebase.auth().currentUser.uid,
               email: firebase.auth().currentUser.email,
@@ -43,10 +47,9 @@ function App() {
             })
           }
         })
-       
       }
     });
-    return () => unregisterAuthObserver(); // Make sure we un-register Firebase observers when the component unmounts.
+    return () => unregisterAuthObserver();
   }, []);
   if (!isSignedIn) {
     return (
@@ -64,7 +67,7 @@ function App() {
   else {
     return (
       <div className="mainwrp app">
-        <Fragment>
+          <UserContext.Provider value={{ data: listUser, updateListUser: setListUser }}>
           <Router basename={process.env.PUBLIC_URL}>
             <Header />
             <Switch>
@@ -77,16 +80,14 @@ function App() {
                 </Switch>
                 <RightSidebar />
                 <Chat />
-              </div>}
+                </div>}
             </Switch>
-          </Router>
-        </Fragment>
-
+            </Router>
+            </UserContext.Provider>
+       
       </div>
     );
   }
-  // vào đường dẫn là localhost vào thẳng Feed/
-
 }
 
 export default App;
